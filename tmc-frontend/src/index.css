@@ -1,0 +1,111 @@
+/* Глобальные переменные тем и правила (подключите этот файл в index.js, если ещё не) */
+
+/* default = light (insrv) */
+:root {
+  --bg-page: #fafcff;
+  --text: #111111;
+  --muted: #888888;
+  --link: #3a27c5;
+  --header-bg: #fafcff;
+  --button-bg: linear-gradient(180deg,#6B3FD6 0%,#45228B 100%);
+  --button-text: #ffffff;
+  --skip-bg: rgba(255,255,255,0.12);
+  --overlay-bg: radial-gradient(circle at 40% 40%, rgba(30,26,50,0.85), rgba(12,10,18,0.9));
+  --brand-logo-filter: none;
+}
+
+/* dark */
+html[data-theme="dark"] {
+  --bg-page: #0f0e16;
+  --text: #ffffff;
+  --muted: #bdbdbd;
+  --link: #ffffff;
+  --header-bg: #0f0e16;
+  --button-bg: linear-gradient(180deg,#5a37b8 0%,#2f174f 100%);
+  --button-text: #ffffff;
+  --skip-bg: rgba(255,255,255,0.10);
+  --overlay-bg: radial-gradient(circle at 40% 40%, rgba(8,8,12,0.98), rgba(6,6,8,0.99));
+  --brand-logo-filter: drop-shadow(0 1px 0 rgba(0,0,0,0.2));
+}
+
+/* auto handled by index.js that sets data-theme appropriately */
+
+/* Base layout */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: var(--bg-page);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Helvetica Neue";
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--header-bg);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: background .18s ease, color .18s ease;
+}
+
+/* left / nav / right */
+.header-left { flex: 0 0 auto; }
+.header-nav { flex: 1 1 auto; text-align: center; }
+.header-right { flex: 0 0 auto; margin-left: auto; }
+
+/* Navigation links */
+.header-nav .nav-link {
+  margin: 0 12px;
+  font-weight: 700;
+  color: var(--link);
+  text-decoration: none;
+}
+.header-nav .nav-link:hover,
+.header-nav .nav-link:focus {
+  text-decoration: underline;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background: var(--skip-bg);
+  color: var(--button-text);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* BrandWordmark classes — ensure visibility of logo text */
+.brand-wordmark { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.brand-wordmark img { width: 28px; height: auto; display: block; }
+.brand-wordmark__text { font-weight: 800; font-size: 18px; color: var(--text); }
+
+/* Buttons (menu) use variables */
+.threedButton {
+  color: var(--button-text) !important;
+  background: var(--button-bg) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+
+/* Overlay backgrounds */
+.overlay, .routeContainer {
+  background: var(--overlay-bg) !important;
+}
+
+/* Ensure other elements inherit theme colors */
+a { color: var(--link); }
+
+/* --- FORCE: Принудительно делаем текст ячеек таблиц чёрным в нужных таблицах --- */
+.table-sticky th,
+.table-sticky td,
+.tmc-table th,
+.tmc-table td,
+.calc-table th,
+.calc-table td,
+.brand-page .calc-card th,
+.brand-page .calc-card td {
+  color: #111317 !important;
+}

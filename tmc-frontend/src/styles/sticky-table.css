@@ -1,0 +1,37 @@
+/* Таблица на 100% ширину с липкой шапкой. Без постоянного зазора и без «просвечивания». */
+.table-sticky {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+/* ВАЖНО: выключаем любые старые «буферы», чтобы не было лишних отступов */
+.table-sticky tbody::before,
+.table-sticky tbody:before {
+  content: none !important;
+  display: none !important;
+  height: 0 !important;
+}
+
+/* Липкая шапка (первая строка thead) */
+.table-sticky thead tr:first-child > th,
+.table-sticky thead tr:first-child > td {
+  position: sticky;
+  top: var(--table-sticky-top, 0px);
+  z-index: 5;
+  background: var(--bg-card, #fff);      /* непрозрачный фон, ничего не просвечивает */
+  background-clip: padding-box;
+  box-shadow: 0 1px 0 rgba(0,0,0,.08);   /* тонкая линия снизу */
+}
+
+/* Если появится 2-я строка шапки — раскомментируйте и измеряйте её в хуке при желании */
+/*
+.table-sticky thead tr:nth-child(2) > th,
+.table-sticky thead tr:nth-child(2) > td {
+  position: sticky;
+  top: calc(var(--table-sticky-top, 0px) + var(--th-row-1, 0px));
+  z-index: 4;
+  background: var(--bg-card, #fff);
+}
+*/

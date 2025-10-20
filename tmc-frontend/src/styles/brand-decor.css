@@ -1,0 +1,116 @@
+/* Позиции */
+.corner-logo {
+  position: fixed;
+  z-index: 9998;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.corner-logo--top-left { left: 18px; top: 18px; }
+.corner-logo--bottom-right { right: 22px; bottom: 22px; }
+
+/* Плитка под знак */
+.corner-logo__inner {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--brand-grad, linear-gradient(135deg, #7b3ae9 0%, #ad76fb 100%));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 22px rgba(139, 77, 242, .35);
+  transition: transform .15s ease, box-shadow .15s ease;
+  padding: 8px;            /* небольшой внутренний отступ, чтобы края SVG не прилипали */
+  overflow: hidden;
+}
+
+/* Картинка внутри плитки: вписываем по обеим сторонам без обрезки
+   Если вдруг подсовнут "широкий" логотип — он станет мелким, но не обрежется. */
+.corner-logo__inner img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;          /* сохраняем пропорции */
+  height: auto;
+  object-fit: contain;  /* на случай, если браузер возьмёт фикс. размеры */
+  display: block;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.15));
+}
+
+/* Ховеры */
+.corner-logo:hover .corner-logo__inner,
+.corner-logo:focus-visible .corner-logo__inner {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(139, 77, 242, .42);
+}
+
+/* Всегда видимый бейдж "ИНСЕРВ" */
+.corner-logo__label {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--brand-200, #d8bdff);
+  color: var(--brand-800, #5427b0);
+  font-weight: 900;
+  font-size: .95rem;
+  letter-spacing: .4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  white-space: nowrap;
+}
+
+/* Слоган — по наведению */
+.corner-logo__tooltip {
+  position: relative;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--brand-200, #d8bdff);
+  color: var(--brand-800, #5427b0);
+  font-weight: 700;
+  font-size: .86rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity .15s ease, transform .15s ease;
+  margin-left: 2px; /* небольшой зазор от бейджа */
+}
+.corner-logo:hover .corner-logo__tooltip,
+.corner-logo:focus-visible .corner-logo__tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Адаптив: на узких экранах сжимаем бейдж; слоган скрываем */
+@media (max-width: 880px) {
+  .corner-logo__label {
+    height: 30px;
+    line-height: 30px;
+    font-size: .9rem;
+    padding: 0 10px;
+  }
+}
+@media (max-width: 680px) {
+  .corner-logo__tooltip { display: none; }
+}
+
+/* Контрастные варианты для тёмной темы */
+:root[data-theme="dark"] .corner-logo__label {
+  background: #161a22;
+  border-color: var(--border-200, #2a2f3a);
+  color: #e8dcfe; /* светлее на тёмном фоне */
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+:root[data-theme="dark"] .corner-logo__tooltip {
+  background: #161a22;
+  border-color: var(--border-200, #2a2f3a);
+  color: #e8dcfe;
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}

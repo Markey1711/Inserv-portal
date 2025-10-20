@@ -1,0 +1,49 @@
+/* Brand wordmark styles + table text override */
+
+/* Базовый контейнер логотипа */
+.brand-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  user-select: none;
+  vertical-align: middle;
+  /* color управляет цветом текста ИНСЕРВ (svg text uses currentColor) */
+  color: var(--brand-wordmark-text, #111317);
+}
+
+/* Размер эмблемы / svg */
+.brand-wordmark .wordmark-img {
+  display: block;
+  height: 28px;
+  width: auto;
+}
+
+/* Явно определяем локальную переменную (если у вас есть global theme vars — они будут применяться вместо значения по умолчанию) */
+:root {
+  --brand-wordmark-text: #111317; /* светлая по умолчанию */
+}
+
+/* Тёмная тема — меняем только текст логотипа на белый,
+   эмблема (градиент/белые элементы) остаётся прежней */
+html[data-theme="dark"] .brand-wordmark {
+  --brand-wordmark-text: #ffffff;
+}
+
+/* Если auto/theme switched by index.js — data-theme будет выставлен соответственно,
+   поэтому правило выше сработает автоматически for dark. */
+
+/* --- CRITICAL: tables should have black text in all themes --- */
+/* Принудительно делаем текст таблиц чёрным (как вы просили) */
+.tmc-table th,
+.tmc-table td,
+.table-sticky th,
+.table-sticky td {
+  color: #111317 !important;
+}
+
+/* Дополнительно: если в таблицах есть элементы с inline color, попытаться переопределить */
+.tmc-table,
+.table-sticky {
+  background: transparent; /* фон оставляйте управляемым глобальной темой, но текст будет чёрным */
+}

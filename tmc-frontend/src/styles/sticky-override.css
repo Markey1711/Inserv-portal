@@ -1,0 +1,37 @@
+/* Жёсткий оверрайд sticky-хедера: без зазоров и без «просвечивания» */
+
+.table-sticky {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  table-layout: fixed !important;
+}
+
+/* Полностью отключаем любые старые «буферы» */
+.table-sticky tbody::before,
+.table-sticky tbody:before,
+.table-sticky tbody::after,
+.table-sticky tbody:after {
+  content: none !important;
+  display: none !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Липкая шапка: непрозрачный фон + высокий z-index */
+.table-sticky thead tr:first-child > th,
+.table-sticky thead tr:first-child > td {
+  position: sticky !important;
+  top: var(--table-sticky-top, 0px) !important; /* ставим из App.js суммарную высоту заголовка+тулбара */
+  z-index: 100 !important;
+  background: #fff !important;
+  background-clip: padding-box !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,.08) !important;
+}
+
+/* На всякий случай: у tbody не должно быть внешних отступов */
+.table-sticky tbody {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}

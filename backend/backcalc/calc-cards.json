@@ -1,0 +1,34 @@
+[
+  {
+    "id": "card-1759689958702",
+    "status": "draft",
+    "createdAt": "2025-10-05T18:45:58.702Z",
+    "approvals": [],
+    "sheets": {
+      "general": {
+        "objectCode": "",
+        "objectName": "",
+        "company": "",
+        "address": "",
+        "customer": "",
+        "date": "",
+        "workType": "Постоянная",
+        "area": "",
+        "comment": ""
+      },
+      "staff": [],
+      "tmc": [],
+      "amortization": [],
+      "extras": [],
+      "summary": {
+        "totalStaff": 0,
+        "totalTmc": 0,
+        "totalAmortization": 0,
+        "totalExtras": 0,
+        "contractMarkup": 0,
+        "contractPrice": 0,
+        "grandTotal": 0
+      }
+    }
+  }
+]

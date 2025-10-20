@@ -1,0 +1,193 @@
+/* Переменные тем.
+   Тема выбирается атрибутом data-theme у <html>.
+   Для надёжности дублируем базовые значения в :root как fallback,
+   если атрибут ещё не применился (мигание на раннем рендере). */
+
+/* ===== Fallback (значения по умолчанию = insrv) ===== */
+:root {
+  --brand-50:  #f5efff;
+  --brand-100: #eadcff;
+  --brand-200: #d8bdff;
+  --brand-300: #c59bff;
+  --brand-400: #ad76fb;
+  --brand-500: #8f4df2;
+  --brand-600: #7b3ae9;
+  --brand-700: #692fd7;
+  --brand-800: #5427b0;
+  --brand-900: #43218a;
+  --brand-grad: linear-gradient(135deg, #7b3ae9 0%, #ad76fb 100%);
+
+  --success-500: #8bc34a;
+  --success-600: #7bb23f;
+  --danger-500: #e53935;
+  --danger-600: #c62828;
+  --warning-500: #ffb300;
+  --muted-500: #6b7280;
+
+  --bg-page: #f6f7fb;
+  --bg-card: #ffffff;
+  --text-900: #111317;
+  --text-700: #2b2f36;
+  --text-500: #475569;
+  --border-200: #e6e8ef;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  --shadow-1: 0 4px 14px rgba(20, 20, 40, 0.08);
+  --shadow-2: 0 10px 30px rgba(20, 20, 40, 0.10);
+
+  --font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* Дополнительные токены для компонентов (табы/кнопки/бейджи/ссылки/фокус) */
+  --link:        #5427b0;
+  --link-hover:  #692fd7;
+
+  --tab-bg:            #ffffff;
+  --tab-bg-active:     var(--brand-50);
+  --tab-border:        var(--border-200);
+  --tab-border-active: var(--brand-300);
+  --tab-text:          var(--text-700);
+  --tab-text-active:   var(--brand-800);
+
+  --btn-brand-bg:      var(--brand-50);
+  --btn-brand-border:  var(--brand-300);
+  --btn-brand-text:    var(--brand-800);
+
+  --badge-bg:          #ffffff;
+  --badge-border:      var(--brand-200);
+  --badge-text:        var(--brand-800);
+
+  --ring-brand:        rgba(121, 58, 233, 0.4);  /* цвет фокус-обводки */
+  --ring-offset:       #ffffff;
+
+  --table-head-bg:     #f3f4f8;
+  --table-row-alt:     #fafbfe;
+}
+
+/* ===== Брендовая тема Инсерв ===== */
+:root[data-theme="insrv"] {
+  --brand-50:  #f5efff;
+  --brand-100: #eadcff;
+  --brand-200: #d8bdff;
+  --brand-300: #c59bff;
+  --brand-400: #ad76fb;
+  --brand-500: #8f4df2;
+  --brand-600: #7b3ae9;
+  --brand-700: #692fd7;
+  --brand-800: #5427b0;
+  --brand-900: #43218a;
+  --brand-grad: linear-gradient(135deg, #7b3ae9 0%, #ad76fb 100%);
+
+  --success-500: #8bc34a;
+  --success-600: #7bb23f;
+  --danger-500: #e53935;
+  --danger-600: #c62828;
+  --warning-500: #ffb300;
+  --muted-500: #6b7280;
+
+  --bg-page: #f6f7fb;
+  --bg-card: #ffffff;
+  --text-900: #111317;
+  --text-700: #2b2f36;
+  --text-500: #475569;
+  --border-200: #e6e8ef;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  --shadow-1: 0 4px 14px rgba(20, 20, 40, 0.08);
+  --shadow-2: 0 10px 30px rgba(20, 20, 40, 0.10);
+
+  --font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* Компонентные токены (можно перенастроить под тему) */
+  --link:        #5427b0;
+  --link-hover:  #692fd7;
+
+  --tab-bg:            #ffffff;
+  --tab-bg-active:     var(--brand-50);
+  --tab-border:        var(--border-200);
+  --tab-border-active: var(--brand-300);
+  --tab-text:          var(--text-700);
+  --tab-text-active:   var(--brand-800);
+
+  --btn-brand-bg:      var(--brand-50);
+  --btn-brand-border:  var(--brand-300);
+  --btn-brand-text:    var(--brand-800);
+
+  --badge-bg:          #ffffff;
+  --badge-border:      var(--brand-200);
+  --badge-text:        var(--brand-800);
+
+  --ring-brand:        rgba(121, 58, 233, 0.4);
+  --ring-offset:       #ffffff;
+
+  --table-head-bg:     #f3f4f8;
+  --table-row-alt:     #fafbfe;
+}
+
+/* ===== Тёмная тема ===== */
+:root[data-theme="dark"] {
+  --brand-50:  #2a2340;
+  --brand-100: #3a2d5d;
+  --brand-200: #513a86;
+  --brand-300: #6a49b4;
+  --brand-400: #8a63df;
+  --brand-500: #a47cf6;
+  --brand-600: #c1a6fa;
+  --brand-700: #d6c2fc;
+  --brand-800: #e8dcfe;
+  --brand-900: #f5efff;
+  --brand-grad: linear-gradient(135deg, #6a49b4 0%, #8a63df 100%);
+
+  --success-500: #8bc34a;
+  --success-600: #7bb23f;
+  --danger-500: #ef5350;
+  --danger-600: #e53935;
+  --warning-500: #ffca28;
+  --muted-500: #9aa3b2;
+
+  --bg-page: #101218;
+  --bg-card: #161a22;
+  --text-900: #f5f7fb;
+  --text-700: #d8dbe2;
+  --text-500: #aab1bf;
+  --border-200: #2a2f3a;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  --shadow-1: 0 8px 24px rgba(0,0,0,.4);
+  --shadow-2: 0 16px 48px rgba(0,0,0,.5);
+
+  --font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* Компонентные токены для темной темы */
+  --link:        #e8dcfe;
+  --link-hover:  #d6c2fc;
+
+  --tab-bg:            #171a22;
+  --tab-bg-active:     #1c2030;
+  --tab-border:        var(--border-200);
+  --tab-border-active: #6a49b4;
+  --tab-text:          var(--text-700);
+  --tab-text-active:   var(--brand-800);
+
+  --btn-brand-bg:      #1c2030;
+  --btn-brand-border:  #6a49b4;
+  --btn-brand-text:    #e8dcfe;
+
+  --badge-bg:          #161a22;
+  --badge-border:      var(--border-200);
+  --badge-text:        #e8dcfe;
+
+  --ring-brand:        rgba(164, 124, 246, 0.5);
+  --ring-offset:       #0d0f14;
+
+  --table-head-bg:     #1a1f2b;
+  --table-row-alt:     #141823;
+}

@@ -68,9 +68,8 @@ async function getObjectById(connOrPool, id) {
 }
 
 function padCodeBase(codeBase) {
-  // user allowed hiding zeros; but for objectCodeFull we use codeBase as-is (no leading zeros)
-  // if you later want 4-digit left part with zeros: return String(codeBase).padStart(4,'0');
-  return String(codeBase);
+  // Левое число кода объекта должно иметь 4 знака с ведущими нулями: 0001-1
+  return String(codeBase).padStart(4, '0');
 }
 
 // increment calcCount for object in transaction, return updated object row

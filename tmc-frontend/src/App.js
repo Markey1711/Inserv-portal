@@ -6,6 +6,8 @@ import TmcPage from "./pages/TmcPage";
 import CardCalc from "./Frontcalc/CardCalc";
 import CalcJournal from "./Frontcalc/CalcJournal";
 import TmcCard from "./Frontcalc/TmcCard";
+import ObjectsPage from "./pages/ObjectsPage";
+import ObjectCard from "./pages/ObjectCard";
 
 import BrandWordmark from "./components/BrandWordmark";
 import "./styles/brand-wordmark.css";
@@ -67,6 +69,9 @@ function Header({ theme, onThemeChange }) {
         <Link to="/card-calc" style={{ margin: "0 12px", fontWeight: "bold", color: linkColor }}>
           Журнал расчетных карточек
         </Link>
+        <Link to="/objects" style={{ margin: "0 12px", fontWeight: "bold", color: linkColor }}>
+          Журнал объектов
+        </Link>
       </nav>
 
       <div style={{ flex: "0 0 auto", marginLeft: "auto" }}>
@@ -102,6 +107,8 @@ export default function App() {
           <Route path="/card-calc/:id" element={<CardCalc />} />
           <Route path="/tmc/new" element={<TmcCard />} />
           <Route path="/tmc/:id" element={<TmcCard />} />
+          <Route path="/objects" element={<ObjectsPage />} />
+          <Route path="/objects/:id" element={<ObjectCard />} />
         </Routes>
       </main>
     </BrowserRouter>

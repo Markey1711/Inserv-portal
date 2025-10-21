@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
 // Create new object (requires name unique)
 router.post('/', async (req, res) => {
   try {
-    const { name } = req.body || {};
+    const { name, periodMonth = null, periodYear = null } = req.body || {};
     if (!name || String(name).trim() === '') return res.status(400).json({ error: 'empty_name' });
 
     // check uniqueness
@@ -47,8 +47,8 @@ router.post('/', async (req, res) => {
     const nextCode = (m && m.maxCode) ? (m.maxCode + 1) : 1;
 
     const [r] = await pool.query(
-      'INSERT INTO objects (codeBase, name, calcCount, createdAt, updatedAt) VALUES (?, ?, ?, NOW(), NOW())',
-      [nextCode, name, 0]
+      'INSERT INTO objects (codeBase, name, calcCount, periodMonth, periodYear, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+      [nextCode, name, 0, periodMonth, periodYear]
     );
     const [rows] = await pool.query('SELECT * FROM objects WHERE id = ?', [r.insertId]);
     res.json(rows[0]);
@@ -57,16 +57,23 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Patch update (only name allowed practically)
+// Patch update (name and period fields)
 router.patch('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { name } = req.body || {};
+    const { name, periodMonth, periodYear } = req.body || {};
     if (name) {
       // check uniqueness
       const [ex] = await pool.query('SELECT id FROM objects WHERE name = ? AND id <> ?', [name, id]);
       if (ex[0]) return res.status(409).json({ error: 'name_taken' });
       await pool.query('UPDATE objects SET name = ?, updatedAt = NOW() WHERE id = ?', [name, id]);
+    }
+    // update period fields if provided (allow null)
+    if (typeof periodMonth !== 'undefined' || typeof periodYear !== 'undefined') {
+      await pool.query(
+        'UPDATE objects SET periodMonth = COALESCE(?, periodMonth), periodYear = COALESCE(?, periodYear), updatedAt = NOW() WHERE id = ?',
+        [periodMonth, periodYear, id]
+      );
     }
     const [rows] = await pool.query('SELECT * FROM objects WHERE id = ?', [id]);
     res.json(rows[0] || null);

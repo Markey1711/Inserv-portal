@@ -5,6 +5,7 @@ export default function CalcJournal() {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [objects, setObjects] = useState([]);
   const [filters, setFilters] = useState({
     objectCode: "",
     objectName: "",
@@ -12,6 +13,7 @@ export default function CalcJournal() {
     comment: "",
   });
   const [highlightedId, setHighlightedId] = useState(null);
+  const [copyDialog, setCopyDialog] = useState({ open: false, sourceCode: null, targetObjectId: "", targetObjectName: "" });
   const navigate = useNavigate();
 
   const loadCards = useCallback(() => {
@@ -34,6 +36,13 @@ export default function CalcJournal() {
   useEffect(() => {
     loadCards();
   }, [loadCards]);
+
+  const loadObjects = useCallback(() => {
+    fetch("http://localhost:3001/api/objects")
+      .then((res) => res.json())
+      .then((data) => setObjects(Array.isArray(data) ? data : []))
+      .catch(() => setObjects([]));
+  }, []);
 
   function handleDelete(objectCode) {
     if (!window.confirm("Удалить карточку?")) return;
@@ -115,11 +124,12 @@ export default function CalcJournal() {
         >
           <thead>
             <tr style={{ background: "#f5f5f5" }}>
-              <th style={{ width: "10%" }}>Код</th>
+              <th style={{ width: "14%" }}>Код</th>
               <th style={{ width: "35%" }}>Название объекта</th>
               <th style={{ width: "35%" }}>Адрес</th>
               <th style={{ width: "15%" }}>Комментарий</th>
-              <th style={{ width: "5%" }}></th>
+              <th style={{ width: "1%" }}></th>
+              <th style={{ width: "1%" }}></th>
             </tr>
 
             {/* Фильтры: строка с input под заголовками, похожи на журнал ТМЦ */}
@@ -157,13 +167,14 @@ export default function CalcJournal() {
                 />
               </th>
               <th />
+              <th />
             </tr>
           </thead>
 
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} style={{ textAlign: "center", padding: 16, color: "#888" }}>
+                <td colSpan={6} style={{ textAlign: "center", padding: 16, color: "#888" }}>
                   Нет карточек
                 </td>
               </tr>
@@ -181,11 +192,33 @@ export default function CalcJournal() {
                     }}
                   >
                     <td>
-                      <Link to={`/card-calc/${card.objectCode}`}>{card.objectCode}</Link>
+                      <Link to={`/card-calc/${card.objectCode}`}>
+                        {card.objectCodeFull || card.objectCode}
+                      </Link>
                     </td>
                     <td>{card.objectName}</td>
                     <td>{card.address}</td>
                     <td>{card.comment}</td>
+                    <td>
+                      <button
+                        style={{
+                          border: "none",
+                          background: "none",
+                          color: "#555",
+                          fontSize: "18px",
+                          cursor: "pointer",
+                          marginRight: 4,
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCopyDialog({ open: true, sourceCode: card.objectCode, targetObjectId: "", targetObjectName: "" });
+                          loadObjects();
+                        }}
+                        title="Копировать расчёт"
+                      >
+                        📄
+                      </button>
+                    </td>
                     <td>
                       <button
                         style={{
@@ -207,6 +240,93 @@ export default function CalcJournal() {
             )}
           </tbody>
         </table>
+      )}
+
+      {/* Диалог копирования расчёта */}
+      {copyDialog.open && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "#0006",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 50,
+          }}
+          onClick={() => setCopyDialog({ open: false, sourceCode: null, targetObjectId: "", targetObjectName: "" })}
+        >
+          <div
+            style={{ background: "#fff", padding: 20, borderRadius: 8, minWidth: 420 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginTop: 0 }}>Копировать расчёт</h3>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 12 }}>
+              Выберите объект назначения или введите новое уникальное название (будет создан новый объект).
+            </div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
+              <label style={{ width: 140 }}>Выбрать объект:</label>
+              <select
+                value={copyDialog.targetObjectId}
+                onChange={(e) => setCopyDialog((s) => ({ ...s, targetObjectId: e.target.value }))}
+                style={{ flex: 1, padding: "6px 8px" }}
+              >
+                <option value="">— не выбран —</option>
+                {objects.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {String(o.codeBase).padStart(4, "0")} — {o.name} (расчетов: {o.calcCount})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 16 }}>
+              <label style={{ width: 140 }}>Или новый объект:</label>
+              <input
+                placeholder="Название нового объекта"
+                value={copyDialog.targetObjectName}
+                onChange={(e) => setCopyDialog((s) => ({ ...s, targetObjectName: e.target.value }))}
+                style={{ flex: 1, padding: "6px 8px" }}
+              />
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+              <button
+                onClick={() => setCopyDialog({ open: false, sourceCode: null, targetObjectId: "", targetObjectName: "" })}
+                style={{ padding: "8px 12px" }}
+              >
+                Отмена
+              </button>
+              <button
+                onClick={() => {
+                  const source = copyDialog.sourceCode;
+                  const body = {};
+                  if (copyDialog.targetObjectId) body.targetObjectId = Number(copyDialog.targetObjectId);
+                  if (copyDialog.targetObjectName && !copyDialog.targetObjectId) body.targetObjectName = copyDialog.targetObjectName;
+                  fetch(`http://localhost:3001/api/card-calc/${encodeURIComponent(source)}/copy`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body),
+                  })
+                    .then((res) => res.json())
+                    .then((created) => {
+                      setCopyDialog({ open: false, sourceCode: null, targetObjectId: "", targetObjectName: "" });
+                      if (created && created.objectCode) {
+                        navigate(`/card-calc/${created.objectCode}`);
+                      } else {
+                        loadCards();
+                      }
+                    })
+                    .catch((err) => alert("Ошибка копирования: " + err));
+                }}
+                style={{ padding: "8px 12px", background: "#e7f6d4", border: "1px solid #8bc34a" }}
+              >
+                Копировать
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -313,7 +313,7 @@ export default function CardCalc({ isNew = false }) {
               color: "var(--text-700, #2b2f36)",
             }}
           >
-            Код объекта: {cardData.objectCode}
+            Код объекта: {cardData.objectCodeFull || cardData.objectCode}
           </div>
         )}
 

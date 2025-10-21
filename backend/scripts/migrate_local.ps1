@@ -32,9 +32,9 @@ if ($useEnvPwd) {
 }
 
 # Проверка подключения
-Write-Host "[RUN] Проверка подключения к MySQL $DbHost:$DbPort"
+Write-Host "[RUN] Проверка подключения к MySQL $($DbHost):$DbPort"
 $rc = & mysql -h $DbHost -P $DbPort -u $DbUser -e "SELECT 1;" 2>$null
-if ($LASTEXITCODE -ne 0) { throw "[ERR] Не удалось подключиться к MySQL $Host:$Port пользователем $User" }
+if ($LASTEXITCODE -ne 0) { throw "[ERR] Не удалось подключиться к MySQL $($DbHost):$DbPort пользователем $DbUser" }
 Write-Host "[OK] Подключение успешно"
 
 # Бэкап

@@ -56,9 +56,8 @@ $safe3 = Join-Path $mig "2025-10-21_add_areaTable_if_missing.sql"
 function Invoke-SqlFile($file) {
   if (Test-Path $file) {
     Write-Host "[RUN] $file"
-    # В PowerShell оператор '<' зарезервирован, поэтому используем mysql -e "source ..."
-    $quoted = '"' + $file + '"'
-    & mysql -h $DbHost -P $DbPort -u $DbUser $Db -e "source $quoted"
+    # В PowerShell оператор '<' недоступен, надёжнее передать содержимое через pipeline
+    Get-Content -Raw -Path $file | & mysql -h $DbHost -P $DbPort -u $DbUser $Db
     if ($LASTEXITCODE -ne 0) { throw "[ERR] Ошибка применения $file" }
     Write-Host "[OK] $file"
   } else {

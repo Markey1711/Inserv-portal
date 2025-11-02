@@ -8,6 +8,7 @@ import CalcJournal from "./Frontcalc/CalcJournal";
 import TmcCard from "./Frontcalc/TmcCard";
 import ObjectsPage from "./pages/ObjectsPage";
 import ObjectCard from "./pages/ObjectCard";
+import ObjectCreate from "./pages/ObjectCreate";
 
 import BrandWordmark from "./components/BrandWordmark";
 import "./styles/brand-wordmark.css";
@@ -108,6 +109,7 @@ export default function App() {
           <Route path="/tmc/new" element={<TmcCard />} />
           <Route path="/tmc/:id" element={<TmcCard />} />
           <Route path="/objects" element={<ObjectsPage />} />
+          <Route path="/objects/new" element={<ObjectCreate />} />
           <Route path="/objects/:id" element={<ObjectCard />} />
         </Routes>
       </main>

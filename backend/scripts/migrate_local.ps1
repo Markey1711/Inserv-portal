@@ -52,6 +52,9 @@ $mig  = (Join-Path $base "migrations")
 $safe1 = Join-Path $mig "2025-10-21_add_period_to_objects_safe.sql"
 $safe2 = Join-Path $mig "2025-10-21_alter_card_calc_add_object_fields.sql"
 $safe3 = Join-Path $mig "2025-10-21_add_areaTable_if_missing.sql"
+$safe4 = Join-Path $mig "2025-10-28_alter_objects_add_client_fields.sql"
+$safe5 = Join-Path $mig "2025-11-02_alter_card_calc_add_status.sql"
+$safe6 = Join-Path $mig "2025-11-02_alter_card_calc_add_period.sql"
 
 function Invoke-SqlFile($file) {
   if (Test-Path $file) {
@@ -68,6 +71,9 @@ function Invoke-SqlFile($file) {
 Invoke-SqlFile $safe1
 Invoke-SqlFile $safe2
 Invoke-SqlFile $safe3
+Invoke-SqlFile $safe4
+Invoke-SqlFile $safe5
+Invoke-SqlFile $safe6
 
 Write-Host "[RUN] Проверка схемы"
 & mysql -h $DbHost -P $DbPort -u $DbUser -e "USE ${Db}; DESCRIBE objects; DESCRIBE card_calc;"

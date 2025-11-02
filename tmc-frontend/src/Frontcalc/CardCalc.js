@@ -132,14 +132,22 @@ export default function CardCalc({ isNew = false }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newData),
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        let payload = null;
+        try { payload = await res.json(); } catch {}
+        if (!res.ok || (payload && payload.error)) {
+          const msg = payload?.details || payload?.error || `HTTP ${res.status}`;
+          throw new Error(msg);
+        }
+        return payload;
+      })
       .then((created) => {
         const merged = mergeCardWithEmpty({ ...newData, ...created });
         setCardData(merged);
         const code = created?.objectCode || merged.objectCode;
         if (code) navigate(`/card-calc/${code}`);
       })
-      .catch((err) => alert("Ошибка создания карточки: " + err));
+      .catch((err) => alert("Ошибка создания карточки: " + (err?.message || err)));
   }
 
   // Унифицированное автосохранение (с дебаунсом)

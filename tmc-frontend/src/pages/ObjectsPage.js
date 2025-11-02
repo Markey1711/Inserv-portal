@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ObjectsPage() {
   const [objects, setObjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [name, setName] = useState("");
-  const [periodMonth, setPeriodMonth] = useState("");
-  const [periodYear, setPeriodYear] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+  // форма создания вынесена на отдельную страницу /objects/new
   const navigate = useNavigate();
 
   const loadObjects = () => {
@@ -31,73 +30,40 @@ export default function ObjectsPage() {
     loadObjects();
   }, []);
 
-  const handleCreate = () => {
-    const nm = (name || "").trim();
-    if (!nm) return alert("Введите уникальное название объекта");
-    const body = { name: nm };
-    if (periodMonth) body.periodMonth = Number(periodMonth);
-    if (periodYear) body.periodYear = Number(periodYear);
+  const handleGoCreate = () => navigate('/objects/new');
 
-    fetch("http://localhost:3001/api/objects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-      .then((r) => {
-        if (r.status === 409) throw new Error("Название занято");
-        return r.json();
-      })
-      .then((obj) => {
-        setName("");
-        setPeriodMonth("");
-        setPeriodYear("");
-        navigate(`/objects/${obj.id}`);
-      })
-      .catch((e) => alert("Ошибка создания: " + e.message));
+  const handleRowClick = (o) => setSelectedId(o.id);
+  const handleRowDoubleClick = (o) => navigate(`/objects/${o.id}`);
+
+  const handleDelete = async (o) => {
+    if (!window.confirm(`Удалить объект «${o.name}»? Это действие необратимо.`)) return;
+    try {
+      const res = await fetch(`http://localhost:3001/api/objects/${o.id}`, { method: 'DELETE' });
+      if (res.status === 409) {
+        const body = await res.json().catch(()=>({}));
+        const cnt = body?.count || 0;
+        alert(`Нельзя удалить объект: к нему привязано ${cnt} карточек расчёта.`);
+        return;
+      }
+      if (!res.ok) {
+        const body = await res.json().catch(()=>({}));
+        throw new Error(body?.error || 'DELETE_FAILED');
+      }
+      if (selectedId === o.id) setSelectedId(null);
+      loadObjects();
+    } catch (e) {
+      alert('Ошибка удаления: ' + (e?.message || e));
+    }
   };
 
   return (
     <div style={{ padding: "32px 0 0 0" }}>
       <h2 style={{ textAlign: "center", margin: "0 0 14px 0" }}>Журнал объектов</h2>
 
-      <div
-        style={{
-          background: "#fff",
-          padding: 16,
-          borderRadius: 8,
-          border: "1px solid #e6e8ef",
-          marginBottom: 16,
-        }}
-      >
-        <h3 style={{ marginTop: 0 }}>Создать объект</h3>
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          <input
-            placeholder="Уникальное название"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={{ flex: 1, minWidth: 260, padding: "8px 10px" }}
-          />
-          <select
-            value={periodMonth}
-            onChange={(e) => setPeriodMonth(e.target.value)}
-            style={{ padding: "8px 10px" }}
-          >
-            <option value="">Месяц</option>
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-              <option key={m} value={m}>{String(m).padStart(2, "0")}</option>
-            ))}
-          </select>
-          <input
-            type="number"
-            placeholder="Год"
-            value={periodYear}
-            onChange={(e) => setPeriodYear(e.target.value)}
-            style={{ width: 120, padding: "8px 10px" }}
-          />
-          <button onClick={handleCreate} style={{ padding: "8px 12px", background: "#e7f6d4", border: "1px solid #8bc34a" }}>
-            Создать
-          </button>
-        </div>
+      <div style={{ textAlign: 'right', marginBottom: 16 }}>
+        <button onClick={handleGoCreate} style={{ padding: '8px 12px', background: '#e7f6d4', border: '1px solid #8bc34a' }}>
+          Создать новый объект
+        </button>
       </div>
 
       {loading ? (
@@ -113,8 +79,10 @@ export default function ObjectsPage() {
               <th style={{ padding: 10, textAlign: "left" }}>Код</th>
               <th style={{ padding: 10, textAlign: "left" }}>Название</th>
               <th style={{ padding: 10, textAlign: "left" }}>Расчётов</th>
-              <th style={{ padding: 10, textAlign: "left" }}>Период</th>
-              <th></th>
+              <th style={{ padding: 10, textAlign: "left" }}>Адрес</th>
+              <th style={{ padding: 10, textAlign: "left" }}>Контакты</th>
+              <th style={{ padding: 10, textAlign: "left" }}>Юр. лицо клиента</th>
+              <th style={{ padding: 10, textAlign: 'left' }}>Действия</th>
             </tr>
           </thead>
           <tbody>
@@ -125,19 +93,33 @@ export default function ObjectsPage() {
                 </td>
               </tr>
             ) : (
-              objects.map((o) => (
-                <tr key={o.id}>
-                  <td style={{ padding: 8 }}>{String(o.codeBase).padStart(4, "0")}</td>
-                  <td style={{ padding: 8 }}>{o.name}</td>
-                  <td style={{ padding: 8 }}>{o.calcCount}</td>
-                  <td style={{ padding: 8 }}>
-                    {o.periodMonth && o.periodYear ? `${String(o.periodMonth).padStart(2, "0")}.${o.periodYear}` : "—"}
-                  </td>
-                  <td style={{ padding: 8 }}>
-                    <Link to={`/objects/${o.id}`}>Открыть</Link>
-                  </td>
-                </tr>
-              ))
+              objects.map((o) => {
+                const isSel = selectedId === o.id;
+                return (
+                  <tr
+                    key={o.id}
+                    onClick={() => handleRowClick(o)}
+                    onDoubleClick={() => handleRowDoubleClick(o)}
+                    style={{ background: isSel ? '#f0f7ff' : undefined, cursor: 'pointer' }}
+                  >
+                    <td style={{ padding: 8 }}>{String(o.codeBase).padStart(4, "0")}</td>
+                    <td style={{ padding: 8 }}>{o.name}</td>
+                    <td style={{ padding: 8 }}>{o.calcCount}</td>
+                    <td style={{ padding: 8 }}>{o.address || "—"}</td>
+                    <td style={{ padding: 8 }}>{o.contacts || "—"}</td>
+                    <td style={{ padding: 8 }}>{o.clientCompany || "—"}</td>
+                    <td style={{ padding: 8 }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(o); }}
+                        title="Удалить объект"
+                        style={{ background: '#fff0f0', border: '1px solid #e5bdbd', borderRadius: 4, cursor: 'pointer', padding: '4px 8px' }}
+                      >
+                        🗑️ Удалить
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

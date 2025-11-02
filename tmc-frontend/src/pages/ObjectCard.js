@@ -27,8 +27,9 @@ export default function ObjectCard() {
   const handleSave = () => {
     const body = {
       name: obj.name,
-      periodMonth: obj.periodMonth ?? null,
-      periodYear: obj.periodYear ?? null,
+      address: obj.address ?? null,
+      contacts: obj.contacts ?? null,
+      clientCompany: obj.clientCompany ?? null,
     };
     fetch(`http://localhost:3001/api/objects/${encodeURIComponent(id)}`, {
       method: "PATCH",
@@ -71,26 +72,26 @@ export default function ObjectCard() {
             style={{ padding: "8px 10px" }}
           />
 
-          <div>Период (месяц/год):</div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <select
-              value={obj.periodMonth ?? ""}
-              onChange={(e) => setObj((s) => ({ ...s, periodMonth: e.target.value ? Number(e.target.value) : null }))}
-              style={{ padding: "8px 10px" }}
-            >
-              <option value="">—</option>
-              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                <option key={m} value={m}>{String(m).padStart(2, "0")}</option>
-              ))}
-            </select>
-            <input
-              type="number"
-              placeholder="Год"
-              value={obj.periodYear ?? ""}
-              onChange={(e) => setObj((s) => ({ ...s, periodYear: e.target.value ? Number(e.target.value) : null }))}
-              style={{ width: 120, padding: "8px 10px" }}
-            />
-          </div>
+          <div>Адрес объекта:</div>
+          <input
+            value={obj.address || ""}
+            onChange={(e) => setObj((s) => ({ ...s, address: e.target.value }))}
+            style={{ padding: "8px 10px" }}
+          />
+
+          <div>Контакты:</div>
+          <input
+            value={obj.contacts || ""}
+            onChange={(e) => setObj((s) => ({ ...s, contacts: e.target.value }))}
+            style={{ padding: "8px 10px" }}
+          />
+
+          <div>Юр. лицо клиента:</div>
+          <input
+            value={obj.clientCompany || ""}
+            onChange={(e) => setObj((s) => ({ ...s, clientCompany: e.target.value }))}
+            style={{ padding: "8px 10px" }}
+          />
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>

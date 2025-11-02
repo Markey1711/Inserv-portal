@@ -6,29 +6,56 @@ import React, { useState, useEffect } from "react";
 export default function GeneralSheet({ data, onChange }) {
   // Локальный стейт всегда синхронизируется с props.data
   const [localData, setLocalData] = useState(data || {});
-  const [objectNameEditable, setObjectNameEditable] = useState(!data?.objectName);
+  // object title is selected from dropdown during creation
   const [saved, setSaved] = useState(!!data?.objectCode);
+  const [objects, setObjects] = useState([]);
+  const [selectedObjectId, setSelectedObjectId] = useState("");
 
   useEffect(() => {
     setLocalData(data || {});
-    setSaved(!!(data && data.objectCode));
-    setObjectNameEditable(!(data && data.objectName));
+  setSaved(!!(data && data.objectCode));
+    if (!(data && data.objectCode)) {
+      // при создании подгружаем список объектов
+      fetch("http://localhost:3001/api/objects")
+        .then((r) => r.json())
+        .then((arr) => {
+          const list = Array.isArray(arr) ? arr : [];
+          list.sort((a, b) => Number(a.codeBase) - Number(b.codeBase));
+          setObjects(list);
+        })
+        .catch(() => setObjects([]));
+    }
   }, [data]);
 
   // Сохранить новую карточку
   function handleSaveClick() {
-    if (!localData.objectCode && localData.objectName?.trim()) {
-      if (onChange) onChange(localData);
-      setSaved(true);
-      setObjectNameEditable(false);
+    if (!localData.objectCode && selectedObjectId) {
+      const obj = objects.find((o) => String(o.id) === String(selectedObjectId));
+      if (!obj) return;
+      const payload = {
+        ...localData,
+        objectId: obj.id,
+        objectName: obj.name,
+        // подтягиваем адрес и Заказчика из объекта (company)
+        address: obj.address || "",
+        company: obj.clientCompany || "",
+      };
+  if (onChange) onChange(payload);
+  setSaved(true);
     }
   }
 
-  function handleNameChange(e) {
-    setLocalData({ ...localData, objectName: e.target.value });
-  }
-  function handleNameBlur() {
-    setObjectNameEditable(false);
+  function handleObjectSelect(e) {
+    const value = e.target.value;
+    setSelectedObjectId(value);
+    const obj = objects.find((o) => String(o.id) === String(value));
+    if (obj) {
+      setLocalData({
+        ...localData,
+        objectId: obj.id,
+        objectName: obj.name,
+      });
+    }
   }
 
   // Автосохранение для остальных полей
@@ -81,15 +108,14 @@ export default function GeneralSheet({ data, onChange }) {
         textAlign: "center",
         marginBottom: 16
       }}>
-        {objectNameEditable || !localData.objectName ? (
-          <input
-            type="text"
-            value={localData.objectName || ""}
-            onChange={handleNameChange}
-            onBlur={handleNameBlur}
-            placeholder="Введите название объекта"
+        {saved ? (
+          <span>{localData.objectName}</span>
+        ) : (
+          <select
+            value={selectedObjectId}
+            onChange={handleObjectSelect}
             style={{
-              fontSize: "1.2rem",
+              fontSize: "1.1rem",
               padding: "8px 20px",
               marginBottom: 6,
               borderRadius: 5,
@@ -97,9 +123,14 @@ export default function GeneralSheet({ data, onChange }) {
               width: "70%",
               textAlign: "center"
             }}
-          />
-        ) : (
-          <span>{localData.objectName}</span>
+          >
+            <option value="">— Выберите объект —</option>
+            {objects.map((o) => (
+              <option key={o.id} value={o.id}>
+                {String(o.codeBase).padStart(4, "0")} — {o.name}
+              </option>
+            ))}
+          </select>
         )}
         {!saved && (
           <button
@@ -113,7 +144,7 @@ export default function GeneralSheet({ data, onChange }) {
               border: "1px solid #8bc34a",
               cursor: "pointer"
             }}
-            disabled={!localData.objectName || !localData.objectName.trim()}
+            disabled={!selectedObjectId}
           >
             Сохранить
           </button>

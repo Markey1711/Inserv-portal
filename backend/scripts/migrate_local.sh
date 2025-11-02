@@ -74,6 +74,9 @@ MIG_DIR="$BASE_DIR/migrations"
 SAFE1="$MIG_DIR/2025-10-21_add_period_to_objects_safe.sql"
 SAFE2="$MIG_DIR/2025-10-21_alter_card_calc_add_object_fields.sql"
 SAFE3="$MIG_DIR/2025-10-21_add_areaTable_if_missing.sql"
+SAFE4="$MIG_DIR/2025-10-28_alter_objects_add_client_fields.sql"
+SAFE5="$MIG_DIR/2025-11-02_alter_card_calc_add_status.sql"
+SAFE6="$MIG_DIR/2025-11-02_alter_card_calc_add_period.sql"
 
 run_sql() {
   local file="$1"
@@ -89,6 +92,9 @@ run_sql() {
 run_sql "$SAFE1"
 run_sql "$SAFE2"
 run_sql "$SAFE3"
+run_sql "$SAFE4"
+run_sql "$SAFE5"
+run_sql "$SAFE6"
 
 # Проверка схемы
 echo "[RUN] Проверка схемы"

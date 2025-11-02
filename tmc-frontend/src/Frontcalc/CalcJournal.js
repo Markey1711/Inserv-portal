@@ -20,7 +20,20 @@ export default function CalcJournal() {
     setLoading(true);
     setError("");
     fetch("http://localhost:3001/api/card-calc?page=1&perPage=200&raw=1")
-      .then((res) => res.json())
+      .then(async (res) => {
+        let data;
+        try {
+          data = await res.json();
+        } catch (e) {
+          const txt = await res.text().catch(() => "");
+          throw new Error(`HTTP ${res.status} ${txt || e?.message || ""}`);
+        }
+        if (!res.ok || (data && data.error)) {
+          const details = data && (data.details || data.error || data.message);
+          throw new Error(details || `HTTP ${res.status}`);
+        }
+        return data;
+      })
       .then((data) => {
         const arr = Array.isArray(data) ? data : Array.isArray(data?.items) ? data.items : [];
         arr.sort((a, b) => Number(a.objectCode) - Number(b.objectCode));
@@ -28,7 +41,7 @@ export default function CalcJournal() {
         setLoading(false);
       })
       .catch((e) => {
-        setError("Ошибка загрузки данных");
+        setError(`Ошибка загрузки данных: ${e?.message || e}`);
         setLoading(false);
       });
   }, []);
@@ -63,10 +76,9 @@ export default function CalcJournal() {
     navigate("/card-calc/new");
   }
 
-  const list = Array.isArray(cards) ? cards : [];
-
   // фильтрованная версия списка по inputs
   const filtered = useMemo(() => {
+    const list = Array.isArray(cards) ? cards : [];
     const f = {
       code: (filters.objectCode || "").toString().toLowerCase(),
       name: (filters.objectName || "").toLowerCase(),
@@ -81,7 +93,7 @@ export default function CalcJournal() {
         (f.comment === "" || String(card.comment || "").toLowerCase().includes(f.comment))
       );
     });
-  }, [list, filters]);
+  }, [cards, filters]);
 
   const onFilterChange = (key, value) => {
     setFilters((s) => ({ ...s, [key]: value }));
